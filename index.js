@@ -12,6 +12,11 @@ const typeDefs = gql`
     date: Int
   }
 
+  type FilesQueryResponse {
+    files: [File!]
+    free: String!
+  }
+
   type Job {
     averagePrintTime: Int
     estimatedPrintTime: Int
@@ -36,6 +41,7 @@ const typeDefs = gql`
 
   type Query {
     currentJob: JobInformation
+    fileInformation: FilesQueryResponse
   }
 
   type Mutation {
@@ -45,6 +51,7 @@ const typeDefs = gql`
     cancelJob: Boolean
     pauseJob: Boolean
     resumeJob: Boolean
+    setTargetTemperature(tool: Int!, temperature: Float!): Boolean
   }
 `;
 
@@ -52,13 +59,19 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     currentJob: async () => {
-
       const response = await get('/job');
 
       const jobInformation = await response.json();
 
       return jobInformation;
     },
+    fileInformation: async () => {
+      const response = await get('/files?recursive=true');
+
+      const jobInformation = await response.json();
+
+      return jobInformation;
+    }
   },
   Mutation: {
     jog: async (_, {x, y, z}) => {
@@ -82,7 +95,7 @@ const resolvers = {
       addIfHoming('y');
       addIfHoming('z');
 
-      await post('/printer/printhead', {
+      const response = await post('/printer/printhead', {
         command: 'home',
         axes
       });
@@ -97,7 +110,7 @@ const resolvers = {
       return true;
     },
     cancelJob: async () => {
-      await post(`/job`, {
+      await post('/job', {
         command: 'cancel',
       });
 
@@ -115,6 +128,16 @@ const resolvers = {
       await post('/job', {
         command: 'pause',
         action: 'resume'
+      });
+
+      return true;
+    },
+    setTargetTemperature: async (_, args) => {
+      await post('/printer/tool', {
+        command: 'target',
+        targets: {
+          [`tool${args.tool}`]: args.temperature
+        }
       });
 
       return true;
