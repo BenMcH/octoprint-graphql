@@ -51,7 +51,7 @@ const typeDefs = gql`
     cancelJob: Boolean
     pauseJob: Boolean
     resumeJob: Boolean
-    setTargetTemperature(tool: Int!, temperature: Float!): Boolean
+    setTargetTemperature(tool: Int = 0, temperature: Float!): Boolean
   }
 `;
 
