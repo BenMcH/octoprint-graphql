@@ -1,0 +1,18 @@
+# Octoprint Graphql
+
+This project is a thin shim on top of octoprint's standard REST Api.
+Not all API routes are covered currently, but the ones that are here work as expected.
+
+Missing functionality:
+
+- Upload GCODE files
+- Select file to print
+- Print status
+- Most things
+
+PRs are welcome :)
+
+To run:
+Set the OCTOPRINT_URL environment variable to the url of the server.
+Additionally, set API_KEY to the api key for the user you want to
+act as on your api user.
