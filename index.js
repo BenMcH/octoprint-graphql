@@ -52,6 +52,8 @@ const typeDefs = gql`
     pauseJob: Boolean
     resumeJob: Boolean
     setTargetTemperature(tool: Int = 0, temperature: Float!): Boolean
+    setBedTemperature(temperature: Float!): Boolean
+    selectLocalFile(path: String!, print: Boolean = false): Boolean
   }
 `;
 
@@ -141,6 +143,22 @@ const resolvers = {
       });
 
       return true;
+    },
+    selectLocalFile: async (_, {path, print}) => {
+      await post(`/files/local/${path}`, {
+        command: 'select',
+        print
+      });
+
+      return true
+    },
+    setBedTemperature: async (_, {temperature}) => {
+      await post('/printer/bed', {
+        command: 'target',
+        target: temperature
+      });
+
+      return true
     }
   }
 };
